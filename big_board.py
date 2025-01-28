@@ -9,7 +9,7 @@ from firebase_admin import firestore
 # Application Default credentials are automatically created.
 app = firebase_admin.initialize_app()
 db = firestore.client()
-doc_ref = db.collection("Prospects").document("{mockCounter}MockDraft")
+doc_ref = db.collection("Prospects")
 # Initialize Selenium WebDriver
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 
