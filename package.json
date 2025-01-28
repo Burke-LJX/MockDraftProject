@@ -10,7 +10,7 @@
   "license": "ISC",
   "description": "Full Stack Development Project",
   "dependencies": {
-    "express": "^4.21.2"
-  },
-  "devDependencies": {}
+    "express": "^4.21.2",
+    "firebase-admin": "^13.0.2"
+  }
 }
