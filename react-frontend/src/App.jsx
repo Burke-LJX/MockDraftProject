@@ -11,7 +11,6 @@ const App = () => {
     <div className='text-5xl'>Log In to get Started!</div>
     <p>Hello</p>
     <PicksTable />
-    <Card />
     </>
   )
 }
