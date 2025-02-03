@@ -1,82 +1,100 @@
-import Card from "./Card"
-import RoundTitle from "./RoundTitle"
+import { useState, useEffect } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
+import Card from "./Card";
+import RoundTitle from "./RoundTitle";
+
+// Helper function to map round numbers to Firestore labels
+const getRoundLabel = (roundNumber) => {
+    const suffixes = ["th", "st", "nd", "rd"];
+    const v = roundNumber % 100;
+    const suffix = (v > 10 && v < 14) ? "th" : suffixes[(v % 10)] || "th";
+    return `${roundNumber}${suffix} Round`; // Example: "1st Round", "2nd Round"
+};
+
 function PicksTable() {
+    const [activeRound, setActiveRound] = useState(1); // Default to 1st round
+    const [draftData, setDraftData] = useState({});
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchDraftData = async () => {
+            setLoading(true); // Set loading state
+            try {
+                const teamsCollection = collection(db, "Draft_Picks");
+                const teamsSnapshot = await getDocs(teamsCollection);
+
+                const data = {};
+
+                for (const teamDoc of teamsSnapshot.docs) {
+                    const teamName = teamDoc.id; // Each document in `Draft_Picks` is a team
+                    const picksCollection = collection(teamDoc.ref, "Picks");
+                    const picksSnapshot = await getDocs(picksCollection);
+
+                    picksSnapshot.forEach((pickDoc) => {
+                        const pickData = pickDoc.data();
+                        const { Round: round, Selection: selection } = pickData; // Use Firestore field names
+                        const pickNumber = parseInt(pickDoc.id); // Pick number as document ID
+
+                        if (!data[round]) data[round] = [];
+                        data[round].push({ pick: pickNumber, team: teamName, selection });
+                    });
+                }
+
+                // Sort picks in each round by pick number
+                Object.keys(data).forEach((round) => {
+                    data[round].sort((a, b) => a.pick - b.pick);
+                });
+
+                setDraftData(data); // Save the processed data
+            } catch (error) {
+                console.error("Error fetching draft data:", error);
+            } finally {
+                setLoading(false); // Stop loading state
+            }
+        };
+
+        fetchDraftData();
+    }, []);
+
+    const roundKey = getRoundLabel(activeRound); // Convert active round to Firestore label
+
     return (
-        <>
-            <RoundTitle />
-            <div>
-                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                    <table class="w-full text-sm text-left rtl:text-right text-blue-100 dark:text-blue-100">
-                        <thead class="text-xs text-white uppercase bg-blue-600 border-b border-blue-400 dark:text-white">
+        <div>
+            <RoundTitle activeRound={activeRound} setActiveRound={setActiveRound} />
+            <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table className="w-full text-sm text-left text-blue-100">
+                    <thead className="text-xs text-white uppercase bg-blue-600 border-b border-blue-400">
+                        <tr>
+                            <th scope="col" className="px-5 py-3">Pick</th>
+                            <th scope="col" className="px-6 py-3">Selection</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loading ? (
                             <tr>
-                                <th scope="col" class="px-6 py-3">
-                                    Product name
-                                </th>
-                                <th scope="col" class="px-6 py-3">
-                                    Color
-                                </th>
-                                <th scope="col" class="px-6 py-3">
-                                    Category
-                                </th>
-                                <th scope="col" class="px-6 py-3">
-                                    Price
-                                </th>
-                                <th scope="col" class="px-6 py-3">
-                                    Action
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="bg-blue-600 border-b border-blue-400 hover:bg-blue-500">
-                                <Card text="Pick 1" Team="Tennesee Titans" />
-                                <td class="px-6 py-4">Silver</td>
-                                <td class="px-6 py-4">Laptop</td>
-                                <td class="px-6 py-4">$2999</td>
-                                <td class="px-6 py-4">
-                                    <a href="#" class="font-medium text-white hover:underline">Edit</a>
+                                <td colSpan="3" className="px-6 py-4 text-center">
+                                    Loading...
                                 </td>
                             </tr>
-                            <tr class="bg-blue-600 border-b border-blue-400 hover:bg-blue-500">
-                                <Card text="Pick 6" Team="Tennesee Titans" />
-                                <td class="px-6 py-4">White</td>
-                                <td class="px-6 py-4">Laptop PC</td>
-                                <td class="px-6 py-4">$1999</td>
-                                <td class="px-6 py-4">
-                                    <a href="#" class="font-medium text-white hover:underline">Edit</a>
+                        ) : draftData[roundKey] && draftData[roundKey].length > 0 ? (
+                            draftData[roundKey].map((data, index) => (
+                                <tr key={index} className="bg-blue-600 border-b border-blue-400 hover:bg-blue-500">
+                                    <Card text={`Pick ${data.pick}`} Team={data.team} />
+                                    <td className="px-6 py-4">{data.selection || "TBD"}</td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="3" className="px-6 py-4 text-center">
+                                    No picks found for this round
                                 </td>
                             </tr>
-                            <tr class="bg-blue-600 border-b border-blue-400 hover:bg-blue-500">
-                                <Card text="Pick 11" Team="Tennesee Titans" />
-                                <td class="px-6 py-4">Black</td>
-                                <td class="px-6 py-4">Accessories</td>
-                                <td class="px-6 py-4">$99</td>
-                                <td class="px-6 py-4">
-                                    <a href="#" class="font-medium text-white hover:underline">Edit</a>
-                                </td>
-                            </tr>
-                            <tr class="bg-blue-600 border-b border-blue-400 hover:bg-blue-500">
-                                <Card text="Pick 16" Team="Tennesee Titans" />
-                                <td class="px-6 py-4">Gray</td>
-                                <td class="px-6 py-4">Phone</td>
-                                <td class="px-6 py-4">$799</td>
-                                <td class="px-6 py-4">
-                                    <a href="#" class="font-medium text-white hover:underline">Edit</a>
-                                </td>
-                            </tr>
-                            <tr class="bg-blue-600 border-blue-400 hover:bg-blue-500">
-                                <Card text="Pick 21" Team="Pittsburgh Steelers" />
-                                <td class="px-6 py-4">Red</td>
-                                <td class="px-6 py-4">Wearables</td>
-                                <td class="px-6 py-4">$999</td>
-                                <td class="px-6 py-4">
-                                    <a href="#" class="font-medium text-white hover:underline">Edit</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                        )}
+                    </tbody>
+                </table>
             </div>
-        </>
+        </div>
     );
 }
 

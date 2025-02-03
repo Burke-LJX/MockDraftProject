@@ -9,7 +9,6 @@ function Card(props) {
         <p class="mb-3 text-2xl font-normal font-semibold text-gray-500 dark:text-gray-400">{props.Team}</p>
     </div>
     <div class="flex flex-col justify-between p-4 leading-normal"> 
-    <h5 class="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Player: Pos:       COL:</h5>
     </div>
 </a>
     )}

@@ -54,6 +54,8 @@ for section in sections:
                     # Reference to the Team document
                     team_doc_ref = db.collection("Draft_Picks").document(team_name)
                     
+                    # Create Team Document
+                    team_doc_ref.set({})
                     # Reference to the Pick document under the Team
                     pick_doc_ref = team_doc_ref.collection("Picks").document(pick_number)
                     

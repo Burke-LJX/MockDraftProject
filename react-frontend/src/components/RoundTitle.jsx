@@ -1,8 +1,6 @@
 import { useState } from "react";
 
-function RoundTitle() {
-    const [activeRound, setActiveRound] = useState(1); // Default active round is 1
-
+function RoundTitle({ activeRound, setActiveRound }) {
     const rounds = [1, 2, 3, 4, 5, 6, 7];
 
     return (
@@ -18,7 +16,7 @@ function RoundTitle() {
                             }`}
                             type="button"
                             role="tab"
-                            onClick={() => setActiveRound(round)} // Set active round on click
+                            onClick={() => setActiveRound(round)} // Update activeRound via prop
                         >
                             Round {round}
                         </button>

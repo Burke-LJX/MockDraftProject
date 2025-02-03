@@ -11,6 +11,7 @@
   "description": "Full Stack Development Project",
   "dependencies": {
     "express": "^4.21.2",
+    "firebase": "^11.2.0",
     "firebase-admin": "^13.0.2"
   }
 }
