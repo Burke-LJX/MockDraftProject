@@ -22,7 +22,7 @@ const App = () => {
       <Hero title='Welcome to OnTheClock' subtitle="The Open Source NFL Mock Drafting Sim!" />
       {user ? (
         <>
-          <div className="flex w-full space-x-4 p-4">
+          <div className="flex w-full h-full space-x-4 p-4">
           <div className="relative overflow-auto max-h-128 flex-grow shadow-md sm:rounded-lg">
                 <ProspectTable />
             </div>

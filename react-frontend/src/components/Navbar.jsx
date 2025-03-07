@@ -7,6 +7,7 @@ import LoginModal from "./LoginModal";
 const Navbar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [searchField, setSearchField] = useState("id");
 
   useEffect(() => {
     onAuthStateChanged(auth, (currentUser) => {
@@ -26,10 +27,22 @@ const Navbar = () => {
             <div className="flex space-x-2">
               {user ? (
                 <>
-                  <span className="text-white">{user.email}</span>
+                <div className="flex items-center ">
+                  <div className="flex items-center space-x-2 m-4 bg-emerald-500 shadow-md sm:rounded-lg">
+                {/* Dropdown */}
+                <select
+                    className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    value={searchField}
+                    onChange={(e) => setSearchField(e.target.value)}
+                >
+                    <option value="default">Drafts</option>
+                  </select>
+                  </div>
+                  <span className="text-white m-4">{user.email}</span>
                   <button className="text-white bg-red-600 px-3 py-2 rounded-md" onClick={() => signOut(auth)}>
                     Logout
                   </button>
+                  </div>
                 </>
               ) : (
                 <button className="text-white hover:bg-gray-900 px-3 py-2 rounded-md" onClick={() => setIsModalOpen(true)}>

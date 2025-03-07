@@ -34,7 +34,7 @@ function ProspectTable() {
     });
 
     return (
-        <div className="relative overflow-x-auto max-w-3xl max-h-96 shadow-md sm:rounded-lg p-4">
+        <div className="relative overflow-x-auto max-w-3xl max-h-256 shadow-md sm:rounded-lg p-4">
             
             <div className="flex items-center space-x-2 mb-4">
                 {/* Dropdown */}
